@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Your Fingernails - Marketplace</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; font-size: 12px; background: #fff; color: #111; line-height: 1.5; }
+        a { color: inherit; text-decoration: none; }
+        button { cursor: pointer; font-family: inherit; font-size: inherit; border: none; background: none; }
+        
+        #app { display: flex; flex-direction: column; min-height: 100vh; }
+        
+        header { background: #fff; border-bottom: 1px solid #d4d4d2; padding: 12px 20px; display: flex; align-items: center; gap: 20px; position: sticky; top: 0; z-index: 100; }
+        .logo { font-weight: bold; cursor: pointer; font-size: 14px; }
+        nav { display: flex; gap: 20px; flex: 1; }
+        nav button { color: #999; padding: 5px 10px; }
+        nav button:hover, nav button.active { color: #111; }
+        .cart-btn { margin-left: auto; color: #111; }
+        .badge { background: #111; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
+        
+        main { flex: 1; padding: 20px; }
+        .page { display: none; }
+        .page.active { display: block; }
+        
+        h1 { font-size: 32px; margin-bottom: 20px; }
+        h2 { font-size: 18px; margin-bottom: 15px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .card { border: 1px solid #d4d4d2; padding: 15px; cursor: pointer; }
+        .card:hover { background: #f6f6f4; }
+        .card-img { width: 100%; aspect-ratio: 1; background: #f6f6f4; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 10px; }
+        .card-title { font-weight: bold; margin-bottom: 5px; }
+        .card-price { font-size: 14px; color: #111; }
+        .card-cat { font-size: 10px; color: #999; margin-bottom: 5px; }
+        
+        .btn { padding: 10px 20px; background: #111; color: #fff; cursor: pointer; margin: 5px 0; display: inline-block; }
+        .btn:hover { background: #444; }
+        .btn-ghost { background: transparent; border: 1px solid #d4d4d2; color: #111; }
+        .btn-ghost:hover { background: #f6f6f4; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 10px; color: #999; margin-bottom: 5px; text-transform: uppercase; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #d4d4d2; font-family: inherit; font-size: 12px; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #111; outline: none; }
+        
+        .cart-item { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #d4d4d2; }
+        .cart-item-img { width: 60px; height: 60px; background: #f6f6f4; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .cart-item-info { flex: 1; }
+        .cart-item-title { font-weight: bold; margin-bottom: 5px; }
+        .cart-item-price { font-size: 14px; }
+        .rm-btn { color: #999; cursor: pointer; }
+        .rm-btn:hover { color: #111; }
+        
+        .summary { background: #f6f6f4; padding: 15px; margin-top: 20px; border: 1px solid #d4d4d2; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #d4d4d2; }
+        .summary-row.total { border: none; font-weight: bold; font-size: 14px; }
+        
+        .empty { text-align: center; padding: 40px 20px; color: #999; }
+        .error { color: #d32f2f; font-size: 11px; margin-top: 5px; }
+        
+        @media (max-width: 640px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+            header { flex-direction: column; gap: 10px; }
+            nav { gap: 10px; }
+            main { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <header>
+        <span class="logo" onclick="goPage('home')">FINGERNAILS</span>
+        <nav>
+            <button onclick="goPage('home')" class="nav-btn">HOME</button>
+            <button onclick="goPage('shop')" class="nav-btn">SHOP</button>
+            <button onclick="goPage('sell')" class="nav-btn">SELL</button>
+        </nav>
+        <button class="cart-btn" onclick="goPage('cart')">CART <span class="badge" id="badge">0</span></button>
+    </header>
+
+    <main>
+        <!-- HOME -->
+        <div id="home" class="page active">
+            <h1>BUY YOUR FINGERNAILS</h1>
+            <p>A marketplace for buying and selling fingernails and personal artifacts.</p>
+            <button class="btn" onclick="goPage('shop')">SHOP NOW</button>
+            <button class="btn btn-ghost" onclick="goPage('sell')">SELL</button>
+            
+            <h2 style="margin-top: 40px;">Featured Items</h2>
+            <div id="featured-grid" class="grid"></div>
+        </div>
+
+        <!-- SHOP -->
+        <div id="shop" class="page">
+            <h1>SHOP</h1>
+            <div class="form-group">
+                <label>Filter:</label>
+                <select onchange="filterProducts(this.value)" id="filter">
+                    <option value="">All</option>
+                    <option value="fingernails">Fingernails</option>
+                    <option value="toenails">Toenails</option>
+                    <option value="personal">Personal</option>
+                </select>
+            </div>
+            <div id="shop-grid" class="grid"></div>
+        </div>
+
+        <!-- PRODUCT DETAIL -->
+        <div id="product" class="page">
+            <button onclick="goPage('shop')" style="margin-bottom: 20px;">← BACK</button>
+            <div id="product-detail"></div>
+        </div>
+
+        <!-- CART -->
+        <div id="cart" class="page">
+            <h1>CART</h1>
+            <div id="cart-items"></div>
+            <div id="cart-summary" class="summary" style="display:none;">
+                <div class="summary-row"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
+                <div class="summary-row"><span>Tax (8%)</span><span id="tax">$0.00</span></div>
+                <div class="summary-row total"><span>Total</span><span id="total">$0.00</span></div>
+                <button class="btn" style="width: 100%; margin-top: 15px;" onclick="goPage('checkout')">CHECKOUT</button>
+            </div>
+        </div>
+
+        <!-- CHECKOUT -->
+        <div id="checkout" class="page">
+            <h1>CHECKOUT</h1>
+            <div style="max-width: 500px;">
+                <h2>Shipping</h2>
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Address *</label>
+                    <input type="text" id="address" required>
+                </div>
+                
+                <h2 style="margin-top: 30px;">Payment</h2>
+                <div class="form-group">
+                    <label>Card Number *</label>
+                    <input type="text" id="card" placeholder="4242 4242 4242 4242" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>Expiry *</label>
+                        <input type="text" id="expiry" placeholder="MM/YY" required>
+                    </div>
+                    <div class="form-group">
+                        <label>CVV *</label>
+                        <input type="text" id="cvv" placeholder="123" required>
+                    </div>
+                </div>
+                
+                <button class="btn" style="width: 100%; margin-top: 20px;" onclick="placeOrder()">PLACE ORDER</button>
+            </div>
+        </div>
+
+        <!-- SELL -->
+        <div id="sell" class="page">
+            <h1>LIST AN ITEM</h1>
+            <div style="max-width: 500px;">
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" id="s-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="s-category" required>
+                        <option value="">Select</option>
+                        <option value="fingernails">Fingernails</option>
+                        <option value="toenails">Toenails</option>
+                        <option value="personal">Personal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Price (USD) *</label>
+                    <input type="number" id="s-price" step="0.01" min="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea id="s-description" rows="4" required></textarea>
+                </div>
+                <button class="btn" onclick="submitListing()">SUBMIT LISTING</button>
+            </div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div id="success" class="page" style="text-align: center; padding: 40px;">
+            <h1>Order Confirmed!</h1>
+            <p style="margin: 20px 0;">Your order #<span id="order-num"></span> has been placed.</p>
+            <p>We'll ship your items within 24 hours.</p>
+            <button class="btn" onclick="goPage('home')" style="margin-top: 20px;">Continue Shopping</button>
+        </div>
+    </main>
+</div>
+
+<script>
+// Data
+const products = [
+    { id: 1, emoji: '💅', title: 'Left Thumb Clipping', category: 'fingernails', price: 4.99, desc: 'Natural. Unpolished.', featured: true },
+    { id: 2, emoji: '✂️', title: 'Right Index Set', category: 'fingernails', price: 8.50, desc: 'Three clippings.', featured: true },
+    { id: 3, emoji: '🦶', title: 'Big Toe Clipping', category: 'toenails', price: 3.50, desc: 'Thick and natural.', featured: false },
+    { id: 4, emoji: '💎', title: 'Painted Pinky Nail', category: 'fingernails', price: 12.00, desc: 'Red polish intact.', featured: true },
+    { id: 5, emoji: '🌙', title: 'Full Set 10 Fingers', category: 'fingernails', price: 22.00, desc: 'Complete set.', featured: true },
+];
+
+let cart = [];
+let customListings = [];
+let currentFilter = '';
+let currentPage = 'home';
+let currentProductId = null;
+
+// Init
+function init() {
+    loadCart();
+    renderFeatured();
+    renderShop();
+    updateBadge();
+}
+
+// Storage
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function loadCart() {
+    const saved = localStorage.getItem('cart');
+    cart = saved ? JSON.parse(saved) : [];
+}
+
+// Navigation
+function goPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(page).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    if (page !== 'product' && page !== 'checkout' && page !== 'success') {
+        document.querySelector(`[onclick="goPage('${page}')"]`)?.classList.add('active');
+    }
+    currentPage = page;
+    
+    if (page === 'shop') renderShop();
+    if (page === 'cart') renderCart();
+}
+
+// Render products
+function renderFeatured() {
+    const featured = products.filter(p => p.featured);
+    const html = featured.map(p => `
+        <div class="card" onclick="showProduct(${p.id})">
+            <div class="card-img">${p.emoji}</div>
+            <div class="card-title">${p.title}</div>
+            <div class="card-cat">${p.category}</div>
+            <div class="card-price">$${p.price.toFixed(2)}</div>
+        </div>
+    `).join('');
+    document.getElementById('featured-grid').innerHTML = html;
+}
+
+function renderShop() {
+    const allProducts = [...products, ...customListings];
+    const filtered = currentFilter ? allProducts.filter(p => p.category === currentFilter) : allProducts;
+    const html = filtered.map(p => `
+        <div class="card" onclick="showProduct(${p.id})">
+            <div class="card-img">${p.emoji || '📦'}</div>
+            <div class="card-title">${p.title}</div>
+            <div class="card-cat">${p.category}</div>
+            <div class="card-price">$${p.price.toFixed(2)}</div>
+        </div>
+    `).join('');
+    document.getElementById('shop-grid').innerHTML = html || '<p class="empty">No products found</p>';
+}
+
+function filterProducts(filter) {
+    currentFilter = filter;
+    renderShop();
+}
+
+function showProduct(id) {
+    currentProductId = id;
+    const allProducts = [...products, ...customListings];
+    const p = allProducts.find(x => x.id === id);
+    if (!p) return;
+    
+    const html = `
+        <h1>${p.title}</h1>
+        <div style="font-size: 60px; margin: 20px 0;">${p.emoji || '📦'}</div>
+        <div style="margin: 20px 0;">
+            <div style="color: #999; font-size: 10px; margin-bottom: 10px;">${p.category}</div>
+            <div style="font-size: 20px; margin-bottom: 20px;">$${p.price.toFixed(2)}</div>
+            <p style="margin-bottom: 20px;">${p.desc || ''}</p>
+        </div>
+        <button class="btn" onclick="addToCart(${id})">ADD TO CART</button>
+    `;
+    document.getElementById('product-detail').innerHTML = html;
+    goPage('product');
+}
+
+function addToCart(id) {
+    const allProducts = [...products, ...customListings];
+    const p = allProducts.find(x => x.id === id);
+    if (!p) return;
+    
+    const existing = cart.find(x => x.id === id);
+    if (existing) {
+        existing.qty++;
+    } else {
+        cart.push({ ...p, qty: 1 });
+    }
+    saveCart();
+    updateBadge();
+    alert('Added to cart!');
+}
+
+function renderCart() {
+    if (cart.length === 0) {
+        document.getElementById('cart-items').innerHTML = '<p class="empty">Your cart is empty</p>';
+        document.getElementById('cart-summary').style.display = 'none';
+        return;
+    }
+    
+    const html = cart.map(item => `
+        <div class="cart-item">
+            <div class="cart-item-img">${item.emoji || '📦'}</div>
+            <div class="cart-item-info">
+                <div class="cart-item-title">${item.title}</div>
+                <div class="cart-item-price">$${item.price.toFixed(2)} x ${item.qty}</div>
+            </div>
+            <button class="rm-btn" onclick="removeFromCart(${item.id})">✕</button>
+        </div>
+    `).join('');
+    document.getElementById('cart-items').innerHTML = html;
+    
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const tax = subtotal * 0.08;
+    const total = subtotal + tax;
+    
+    document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+    document.getElementById('tax').textContent = '$' + tax.toFixed(2);
+    document.getElementById('total').textContent = '$' + total.toFixed(2);
+    document.getElementById('cart-summary').style.display = 'block';
+}
+
+function removeFromCart(id) {
+    cart = cart.filter(x => x.id !== id);
+    saveCart();
+    updateBadge();
+    renderCart();
+}
+
+function updateBadge() {
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    document.getElementById('badge').textContent = count;
+}
+
+// Checkout
+function placeOrder() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const card = document.getElementById('card').value.trim();
+    
+    if (!name || !email || !address || !card) {
+        alert('Please fill all fields');
+        return;
+    }
+    
+    if (!/^\d{16}$/.test(card.replace(/\s/g, ''))) {
+        alert('Invalid card number');
+        return;
+    }
+    
+    cart = [];
+    saveCart();
+    updateBadge();
+    const orderNum = Math.floor(Math.random() * 900000) + 100000;
+    document.getElementById('order-num').textContent = orderNum;
+    goPage('success');
+}
+
+// Sell
+function submitListing() {
+    const title = document.getElementById('s-title').value.trim();
+    const category = document.getElementById('s-category').value;
+    const price = parseFloat(document.getElementById('s-price').value);
+    const desc = document.getElementById('s-description').value.trim();
+    
+    if (!title || !category || !price || !desc) {
+        alert('Please fill all fields');
+        return;
+    }
+    
+    const newProduct = {
+        id: Date.now(),
+        emoji: '📦',
+        title,
+        category,
+        price,
+        desc,
+        featured: false
+    };
+    
+    customListings.push(newProduct);
+    document.getElementById('s-title').value = '';
+    document.getElementById('s-category').value = '';
+    document.getElementById('s-price').value = '';
+    document.getElementById('s-description').value = '';
+    alert('Listing submitted!');
+    renderShop();
+}
+
+// Start
+init();
+</script>
+
+</body>
+</html>
