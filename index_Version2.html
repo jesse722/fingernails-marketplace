@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="BUY YOUR FINGERNAILS - A marketplace for personal artifacts and unique items">
+<title>BUY YOUR FINGERNAILS</title>
+<style>
+
+/* ─────────────────────────────────────────────
+   RESET + ROOT
+───────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --f: 'Courier New', Courier, monospace;
+  --white: #ffffff;
+  --off: #f6f6f4;
+  --light: #ebebea;
+  --line: #d4d4d2;
+  --mid: #999998;
+  --dark: #444443;
+  --black: #111110;
+  --sz: 12px;
+  --sp: 0.14em;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--f);
+  font-size: var(--sz);
+  line-height: 1.5;
+  color: var(--black);
+  background: var(--white);
+  cursor: default;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+button, select, input, textarea {
+  font-family: var(--f);
+  font-size: var(--sz);
+}
+
+a { text-decoration: none; color: inherit; }
+img { display: block; max-width: 100%; }
+
+/* ─────────────────────────────────────────────
+   UTILITY
+───────────────────────────────────────────── */
+.upper { text-transform: uppercase; letter-spacing: var(--sp); }
+.muted { color: var(--mid); }
+.divider { width: 100%; height: 1px; background: var(--line); }
+.hide { display: none !important; }
+.error-msg { color: #d32f2f; font-size: 10px; margin-top: 4px; display: none; }
+.error-msg.show { display: block; }
+
+/* ─────────────────────────────────────────────
+   LAYOUT SHELL
+───────────────────────────────────────────── */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ─────────────────────────────────────────────
+   HEADER / NAV
+───────────────────────────────────────────── */
+#hdr {
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: stretch;
+  height: 44px;
+}
+
+.hdr-logo {
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid var(--line);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.hdr-logo:hover { background: var(--off); }
+
+#hdr-nav {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+}
+
+.nav-link {
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mid);
+  cursor: pointer;
+  border-right: 1px solid var(--line);
+  background: none;
+  border-top: none;
+  border-bottom: none;
+  transition: color 0.1s, background 0.1s;
+  white-space: nowrap;
+}
+.nav-link:hover { color: var(--black); background: var(--off); }
+.nav-link.active { color: var(--black); }
+
+.hdr-right {
+  margin-left: auto;
+  display: flex;
+  align-items: stretch;
+}
+
+.cart-trigger {
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-left: 1px solid var(--line);
+  background: none;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  color: var(--black);
+  transition: background 0.1s;
+}
+.cart-trigger:hover { background: var(--off); }
+
+#cart-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: var(--black);
+  color: var(--white);
+  font-size: 9px;
+  letter-spacing: 0;
+}
+
+.mob-menu-btn {
+  display: none;
+  padding: 0 16px;
+  align-items: center;
+  font-size: 18px;
+  cursor: pointer;
+  border-left: 1px solid var(--line);
+  background: none;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  color: var(--black);
+}
+
+/* Mobile nav drawer */
+#mob-nav {
+  position: fixed;
+  top: 44px;
+  left: 0; right: 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  z-index: 499;
+  display: none;
+  flex-direction: column;
+}
+#mob-nav.open { display: flex; }
+
+.mob-link {
+  padding: 16px 20px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mid);
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  text-align: left;
+}
+.mob-link:hover { color: var(--black); background: var(--off); }
+
+/* ─────────────────────────────────────────────
+   PAGES
+───────────────────────────────────────────── */
+.page { display: none; flex: 1; }
+.page.active { display: block; }
+
+/* ─────────────────────────────────────────────
+   HOME
+───────────────────────────────────────────── */
+#home-hero {
+  padding: 80px 28px 72px;
+  border-bottom: 1px solid var(--line);
+  max-width: 960px;
+}
+
+#home-hero h1 {
+  font-size: clamp(32px, 7vw, 72px);
+  font-weight: normal;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  line-height: 1.0;
+  margin-bottom: 32px;
+}
+
+#home-hero .sub {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mid);
+  max-width: 400px;
+  line-height: 1.9;
+  margin-bottom: 36px;
+}
+
+.home-cta-row { display: flex; gap: 0; }
+
+.btn-black {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  background: var(--black);
+  color: var(--white);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid var(--black);
+  transition: background 0.1s, color 0.1s;
+}
+.btn-black:hover { background: var(--dark); border-color: var(--dark); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  background: transparent;
+  color: var(--black);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  margin-left: -1px;
+  transition: border-color 0.1s, background 0.1s;
+}
+.btn-ghost:hover { border-color: var(--black); background: var(--off); }
+
+/* Stats strip */
+#home-stats {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+}
+.stat-cell {
+  flex: 1;
+  padding: 24px 28px;
+  border-right: 1px solid var(--line);
+}
+.stat-cell:last-child { border-right: none; }
+.stat-val {
+  font-size: 20px;
+  letter-spacing: 0.02em;
+  margin-bottom: 3px;
+}
+.stat-lbl {
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+/* Section scaffolding */
+.sec { border-bottom: 1px solid var(--line); }
+.sec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--line);
+}
+.sec-label {
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+.sec-more {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--black);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sec-more:hover { color: var(--mid); }
+
+/* Product grid */
+.p-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.p-card {
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 0;
+  cursor: pointer;
+  background: var(--white);
+  transition: background 0.1s;
+}
+.p-card:nth-child(4n) { border-right: none; }
+.p-card:hover { background: var(--off); }
+
+.p-card-img {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  background: var(--off);
+  border-bottom: 1px solid var(--line);
+}
+
+.p-card-body { padding: 16px; }
+
+.p-card-cat {
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 5px;
+}
+.p-card-name {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+.p-card-price {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+
+/* How it works */
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.how-cell {
+  padding: 28px;
+  border-right: 1px solid var(--line);
+}
+.how-cell:last-child { border-right: none; }
+.how-n {
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 14px;
+}
+.how-t {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.how-b {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mid);
+  line-height: 1.8;
+}
+
+/* ─────────────────────────────────────────────
+   SHOP
+───────────────────────────────────────────── */
+#shop-bar {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0 18px;
+  height: 40px;
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mid);
+  background: none;
+  border: none;
+  border-right: 1px solid var(--line);
+  cursor: pointer;
+  transition: color 0.1s, background 0.1s;
+}
+.filter-btn:hover { color: var(--black); background: var(--off); }
+.filter-btn.active { color: var(--black); background: var(--off); }
+
+.sort-wrap {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  border-left: 1px solid var(--line);
+}
+select.sort-sel {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  color: var(--mid);
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23999'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+}
+select.sort-sel:hover { color: var(--black); }
+
+#shop-count {
+  padding: 14px 28px;
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mid);
+  border-bottom: 1px solid var(--line);
+}
+
+/* ─────────────────────────────────────────────
+   PRODUCT DETAIL
+───────────────────────────────────────────── */
+#det-back-bar {
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--line);
+}
+.back-btn {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mid);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.back-btn:hover { color: var(--black); }
+
+#det-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--line);
+}
+
+#det-img-col {
+  border-right: 1px solid var(--line);
+}
+#det-img-box {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 100px;
+  background: var(--off);
+  border-bottom: 1px solid var(--line);
+}
+
+#det-info-col { padding: 40px 36px; }
+
+#det-cat {
+  font-size: 8px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 12px;
+}
+#det-title {
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-weight: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+#det-price {
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  margin-bottom: 24px;
+}
+#det-desc {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  line-height: 2;
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+#det-meta { margin-bottom: 28px; }
+.det-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.det-row span:first-child { color: var(--mid); }
+
+#det-add-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--black);
+  color: var(--white);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+#det-add-btn:hover { background: var(--dark); }
+#det-add-btn.added { background: var(--dark); }
+
+/* ─────────────────────────────────────────────
+   CART
+───────────────────────────────────────────── */
+#cart-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px 28px;
+}
+
+.page-h {
+  font-size: 13px;
+  font-weight: normal;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cart-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.cart-thumb {
+  width: 60px;
+  height: 60px;
+  background: var(--off);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.cart-info { flex: 1; }
+.cart-name {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.cart-cat {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+.cart-p {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  margin-right: 12px;
+  white-space: nowrap;
+}
+.rm-btn {
+  background: none;
+  border: none;
+  color: var(--mid);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px;
+  transition: color 0.1s;
+}
+.rm-btn:hover { color: var(--black); }
+
+.cart-sum {
+  margin-top: 28px;
+  border: 1px solid var(--line);
+}
+.sum-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--line);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.sum-row:last-child { border-bottom: none; }
+.sum-row span:first-child { color: var(--mid); }
+.sum-row.total { font-size: 12px; }
+
+.cart-actions {
+  display: flex;
+  gap: 0;
+  margin-top: 16px;
+}
+.cart-actions .btn-ghost { flex: 1; justify-content: center; }
+.cart-actions .btn-black { flex: 2; justify-content: center; margin-left: -1px; }
+
+/* Empty state */
+.empty-state {
+  padding: 80px 20px;
+  text-align: center;
+}
+.empty-state p.big {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 8px;
+}
+.empty-state h3 {
+  font-size: 18px;
+  font-weight: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.empty-state .btn-ghost { margin: 0 auto; }
+
+/* ─────────────────────────────────────────────
+   CHECKOUT
+───────────────────────────────────────────── */
+#co-wrap {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  min-height: calc(100vh - 44px);
+  border-top: 1px solid var(--line);
+}
+#co-left { border-right: 1px solid var(--line); padding: 48px 40px; }
+#co-right { padding: 48px 40px; background: var(--off); }
+
+.form-sec-label {
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.fg { margin-bottom: 16px; }
+.fg label {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 6px;
+}
+.fg input, .fg textarea, .fg select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--black);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  outline: none;
+  transition: border-color 0.1s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.fg input:focus, .fg textarea:focus, .fg select:focus { border-color: var(--black); }
+.fg textarea { resize: vertical; }
+.fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.pay-tabs { display: flex; margin-bottom: 16px; }
+.pay-tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  background: var(--white);
+  color: var(--mid);
+  transition: all 0.1s;
+  margin-right: -1px;
+}
+.pay-tab.active { background: var(--black); color: var(--white); border-color: var(--black); z-index: 1; position: relative; }
+
+.co-sum-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.co-sum-item span:first-child { color: var(--mid); max-width: 70%; }
+.co-tot-block { margin-top: 16px; }
+.co-tot-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 0;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mid);
+  border-bottom: 1px solid var(--line);
+}
+.co-tot-row.final {
+  color: var(--black);
+  font-size: 13px;
+  border-bottom: none;
+  padding-top: 14px;
+}
+
+.btn-place {
+  width: 100%;
+  padding: 15px;
+  background: var(--black);
+  color: var(--white);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  margin-top: 24px;
+  transition: background 0.1s;
+}
+.btn-place:hover { background: var(--dark); }
+
+.secure-note {
+  text-align: center;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-top: 10px;
+}
+
+/* ─────────────────────────────────────────────
+   ORDER SUCCESS
+──────────────────────────���────────────────── */
+#success-wrap {
+  max-width: 440px;
+  margin: 100px auto;
+  padding: 0 28px;
+  text-align: center;
+}
+#success-wrap .chk {
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 20px;
+}
+#success-wrap h2 {
+  font-size: 26px;
+  font-weight: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+#success-wrap p {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mid);
+  line-height: 2;
+  margin-bottom: 32px;
+}
+.order-no {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 6px;
+}
+.order-no strong { color: var(--black); font-weight: normal; }
+
+/* ─────────────────────────────────────────────
+   SELL
+───────────────────────────────────────────── */
+#sell-inner {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 48px 28px 80px;
+}
+.sell-intro {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mid);
+  line-height: 2;
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.upload-zone {
+  border: 1px dashed var(--line);
+  padding: 48px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.1s, background 0.1s;
+  margin-bottom: 4px;
+}
+.upload-zone:hover { border-color: var(--black); background: var(--off); }
+.upload-zone .uico {
+  font-size: 9px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 8px;
+}
+.upload-zone .utxt {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.upload-zone .usub {
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-top: 4px;
+}
+.upload-zone input { display: none; }
+#img-preview {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-top: none;
+  margin-bottom: 4px;
+  display: none;
+}
+
+.sell-note {
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mid);
+  text-align: center;
+  margin-top: 12px;
+  line-height: 1.9;
+}
+
+/* ─────────────────────────────────────────────
+   ABOUT
+───────────────────────────────────────────── */
+#about-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 80px 28px 100px;
+}
+#about-inner h1 {
+  font-size: clamp(22px, 4vw, 38px);
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  margin-bottom: 44px;
+}
+#about-inner p {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  line-height: 2.2;
+  margin-bottom: 20px;
+}
+#about-inner strong { color: var(--black); font-weight: normal; }
+#about-inner hr { border: none; border-top: 1px solid var(--line); margin: 40px 0; }
+
+.about-vals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.av {
+  padding: 24px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.av-t {
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.av-b {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  line-height: 1.9;
+}
+
+/* ─────────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────────── */
+#footer {
+  border-top: 1px solid var(--line);
+  padding: 0;
+  display: flex;
+}
+.foot-cell {
+  flex: 1;
+  padding: 16px 28px;
+  border-right: 1px solid var(--line);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mid);
+  display: flex;
+  align-items: center;
+}
+.foot-cell:last-child { border-right: none; }
+
+/* ─────────────────────────────────────────────
+   TOAST
+───────────────────────────────────────────── */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--black);
+  color: var(--white);
+  padding: 11px 22px;
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .p-grid { grid-template-columns: repeat(2, 1fr); }
+  .p-card:nth-child(4n) { border-right: 1px solid var(--line); }
+  .p-card:nth-child(2n) { border-right: none; }
+  .how-grid { grid-template-columns: repeat(2, 1fr); }
+  .how-cell:nth-child(2) { border-right: none; }
+  #home-stats { flex-wrap: wrap; }
+  .stat-cell { min-width: 50%; }
+  .stat-cell:nth-child(2) { border-right: none; }
+}
+
+@media (max-width: 640px) {
+  #hdr-nav { display: none; }
+  .mob-menu-btn { display: flex; }
+  .hdr-logo { font-size: 10px; }
+  #home-hero { padding: 48px 16px 40px; }
+  #home-hero h1 { font-size: 36px; }
+  .stat-cell { padding: 16px; }
+  .sec-head, #shop-count { padding: 14px 16px; }
+  .p-grid { grid-template-columns: repeat(2, 1fr); }
+  #det-body { grid-template-columns: 1fr; }
+  #det-img-col { border-right: none; }
+  #det-info-col { padding: 24px 16px; }
+  #det-back-bar { padding: 12px 16px; }
+  #cart-inner { padding: 32px 16px; }
+  #co-wrap { grid-template-columns: 1fr; }
+  #co-left { border-right: none; padding: 32px 16px; }
+  #co-right { padding: 32px 16px; }
+  #sell-inner, #about-inner { padding: 32px 16px 64px; }
+  .about-vals { grid-template-columns: 1fr; }
+  .how-grid { grid-template-columns: 1fr 1fr; }
+  #footer { flex-wrap: wrap; }
+  .foot-cell { min-width: 50%; }
+  .cart-actions { flex-direction: column; }
+  .cart-actions .btn-black, .cart-actions .btn-ghost { margin: 0; }
+  .filter-btn { padding: 0 12px; font-size: 8px; }
+}
+
+@media (max-width: 380px) {
+  .p-grid { grid-template-columns: 1fr; }
+  .p-card:nth-child(2n) { border-right: none; }
+  .how-grid { grid-template-columns: 1fr; }
+  .how-cell { border-right: none; }
+}
+
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header id="hdr">
+  <span class="hdr-logo" onclick="nav('home')" role="button" tabindex="0" aria-label="Buy Your Fingernails Home">BUY YOUR FINGERNAILS</span>
+  <nav id="hdr-nav" aria-label="Main navigation">
+    <button class="nav-link active" data-page="home" onclick="nav('home')" aria-label="Home page">HOME</button>
+    <button class="nav-link" data-page="shop" onclick="nav('shop')" aria-label="Shop page">SHOP</button>
+    <button class="nav-link" data-page="sell" onclick="nav('sell')" aria-label="Sell page">SELL</button>
+    <button class="nav-link" data-page="about" onclick="nav('about')" aria-label="About page">ABOUT</button>
+  </nav>
+  <div class="hdr-right">
+    <button class="cart-trigger" onclick="nav('cart')" aria-label="View shopping cart">
+      CART <span id="cart-badge" aria-live="polite" aria-atomic="true">0</span>
+    </button>
+    <button class="mob-menu-btn" onclick="toggleMob()" aria-label="Toggle mobile menu" aria-expanded="false" id="mob-menu-toggle">≡</button>
+  </div>
+</header>
+
+<!-- Mobile nav -->
+<nav id="mob-nav" aria-label="Mobile navigation">
+  <button class="mob-link" onclick="nav('home');closeMob()">HOME</button>
+  <button class="mob-link" onclick="nav('shop');closeMob()">SHOP</button>
+  <button class="mob-link" onclick="nav('sell');closeMob()">SELL</button>
+  <button class="mob-link" onclick="nav('about');closeMob()">ABOUT</button>
+  <button class="mob-link" onclick="nav('cart');closeMob()">CART</button>
+</nav>
+
+<!-- Toast -->
+<div id="toast" role="alert" aria-live="assertive"></div>
+
+<!-- ══��════════════ PAGE: HOME ═══════════════ -->
+<div id="page-home" class="page active" role="main">
+
+  <div id="home-hero">
+    <h1>BUY YOUR<br>FINGERNAILS</h1>
+    <p class="sub">A MARKETPLACE TO BUY AND SELL FINGERNAILS AND PERSONAL ARTIFACTS.</p>
+    <div class="home-cta-row">
+      <button class="btn-black" onclick="nav('shop')">SHOP NOW</button>
+      <button class="btn-ghost" onclick="nav('sell')">SELL</button>
+    </div>
+  </div>
+
+  <div id="home-stats">
+    <div class="stat-cell">
+      <div class="stat-val">2,847</div>
+      <div class="stat-lbl">SOLD</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val">$4.20</div>
+      <div class="stat-lbl">AVG PRICE</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val">341</div>
+      <div class="stat-lbl">SELLERS</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val">24H</div>
+      <div class="stat-lbl">SHIP TIME</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-label">FEATURED LISTINGS</span>
+      <button class="sec-more" onclick="nav('shop')">VIEW ALL</button>
+    </div>
+    <div class="p-grid" id="feat-grid"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-label">HOW IT WORKS</span>
+    </div>
+    <div class="how-grid">
+      <div class="how-cell">
+        <div class="how-n">01</div>
+        <div class="how-t">CLIP</div>
+        <div class="how-b">TRIM YOUR NAILS AS USUAL. KEEP THEM NATURAL AND AUTHENTIC.</div>
+      </div>
+      <div class="how-cell">
+        <div class="how-n">02</div>
+        <div class="how-t">LIST</div>
+        <div class="how-b">UPLOAD A PHOTO, SET YOUR PRICE, PUBLISH YOUR LISTING.</div>
+      </div>
+      <div class="how-cell">
+        <div class="how-n">03</div>
+        <div class="how-t">SHIP</div>
+        <div class="how-b">PACKAGE CAREFULLY AND SHIP TO THE BUYER WITHIN 24 HOURS.</div>
+      </div>
+      <div class="how-cell">
+        <div class="how-n">04</div>
+        <div class="how-t">EARN</div>
+        <div class="how-b">PAYMENT RELEASED UPON DELIVERY CONFIRMATION.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════ PAGE: SHOP ═══════════════ -->
+<div id="page-shop" class="page" role="main">
+
+  <div id="shop-bar">
+    <button class="filter-btn active" data-f="all" onclick="setFilter('all')" aria-pressed="true">ALL</button>
+    <button class="filter-btn" data-f="fingernails" onclick="setFilter('fingernails')" aria-pressed="false">FINGERNAILS</button>
+    <button class="filter-btn" data-f="toenails" onclick="setFilter('toenails')" aria-pressed="false">TOENAILS</button>
+    <button class="filter-btn" data-f="personal" onclick="setFilter('personal')" aria-pressed="false">PERSONAL</button>
+    <div class="sort-wrap">
+      <label for="sort-select" class="muted" style="margin-right:8px;font-size:9px;">SORT:</label>
+      <select id="sort-select" class="sort-sel" onchange="setSort(this.value)" aria-label="Sort products">
+        <option value="">DEFAULT</option>
+        <option value="asc">PRICE: LOW → HIGH</option>
+        <option value="desc">PRICE: HIGH → LOW</option>
+        <option value="new">NEWEST FIRST</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="shop-count"></div>
+  <div id="shop-grid-wrap"></div>
+
+</div>
+
+<!-- ═══════════════ PAGE: PRODUCT ═══════════════ -->
+<div id="page-product" class="page" role="main">
+  <div id="det-back-bar">
+    <button class="back-btn" id="det-back">← BACK</button>
+  </div>
+  <div id="det-body">
+    <div id="det-img-col">
+      <div id="det-img-box"></div>
+    </div>
+    <div id="det-info-col">
+      <div id="det-cat"></div>
+      <h1 id="det-title"></h1>
+      <div id="det-price"></div>
+      <div id="det-desc"></div>
+      <div id="det-meta"></div>
+      <button id="det-add-btn" aria-label="Add product to shopping cart">ADD TO CART</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: CART ═══════════════ -->
+<div id="page-cart" class="page" role="main">
+  <div id="cart-inner">
+    <div class="page-h">CART</div>
+    <div id="cart-body"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: CHECKOUT ═══════════════ -->
+<div id="page-checkout" class="page" role="main">
+  <div id="co-wrap">
+
+    <div id="co-left">
+      <div class="page-h">CHECKOUT</div>
+
+      <form id="checkout-form" novalidate>
+        <div class="form-sec-label">SHIPPING</div>
+        <div class="fg">
+          <label for="c-name">FULL NAME *</label>
+          <input id="c-name" type="text" placeholder="Jane Doe" required aria-required="true">
+          <span class="error-msg" id="err-name" role="alert"></span>
+        </div>
+        <div class="fg">
+          <label for="c-email">EMAIL ADDRESS *</label>
+          <input id="c-email" type="email" placeholder="jane@example.com" required aria-required="true">
+          <span class="error-msg" id="err-email" role="alert"></span>
+        </div>
+        <div class="fg">
+          <label for="c-addr">STREET ADDRESS *</label>
+          <input id="c-addr" type="text" placeholder="123 Main Street" required aria-required="true">
+          <span class="error-msg" id="err-addr" role="alert"></span>
+        </div>
+        <div class="fg-row">
+          <div class="fg">
+            <label for="c-city">CITY</label>
+            <input id="c-city" type="text" placeholder="New York">
+          </div>
+          <div class="fg">
+            <label for="c-zip">ZIP CODE</label>
+            <input id="c-zip" type="text" placeholder="10001">
+          </div>
+        </div>
+        <div class="fg">
+          <label for="c-country">COUNTRY</label>
+          <input id="c-country" type="text" placeholder="United States">
+        </div>
+
+        <div class="form-sec-label" style="margin-top:32px;">PAYMENT</div>
+        <div class="pay-tabs">
+          <div class="pay-tab active" id="pt-stripe" onclick="selPay('stripe')" role="tab" aria-selected="true" tabindex="0">CARD / STRIPE</div>
+          <div class="pay-tab" id="pt-paypal" onclick="selPay('paypal')" role="tab" aria-selected="false" tabindex="-1">PAYPAL</div>
+        </div>
+        <div id="card-section">
+          <div class="fg">
+            <label for="c-card">CARD NUMBER *</label>
+            <input id="c-card" type="text" placeholder="4242 4242 4242 4242" maxlength="19" oninput="fmtCard(this)" required aria-required="true">
+            <span class="error-msg" id="err-card" role="alert"></span>
+          </div>
+          <div class="fg-row">
+            <div class="fg">
+              <label for="c-exp">EXPIRY *</label>
+              <input id="c-exp" type="text" placeholder="MM/YY" maxlength="5" required aria-required="true">
+              <span class="error-msg" id="err-exp" role="alert"></span>
+            </div>
+            <div class="fg">
+              <label for="c-cvv">CVV *</label>
+              <input id="c-cvv" type="text" placeholder="123" maxlength="3" required aria-required="true">
+              <span class="error-msg" id="err-cvv" role="alert"></span>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-place" onclick="placeOrder()">PLACE ORDER →</button>
+      </form>
+      <div class="secure-note">SECURED BY STRIPE &amp; PAYPAL — SSL ENCRYPTED</div>
+    </div>
+
+    <div id="co-right">
+      <div class="form-sec-label">ORDER SUMMARY</div>
+      <div id="co-items"></div>
+      <div class="co-tot-block">
+        <div class="co-tot-row"><span>SUBTOTAL</span><span id="co-sub"></span></div>
+        <div class="co-tot-row"><span>SHIPPING</span><span>$2.99</span></div>
+        <div class="co-tot-row"><span>TAX (8%)</span><span id="co-tax"></span></div>
+        <div class="co-tot-row final"><span>TOTAL</span><span id="co-total"></span></div>
+      </div>
+      <button class="btn-ghost" style="width:100%;justify-content:center;margin-top:20px;" onclick="nav('cart')">← EDIT CART</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: SUCCESS ═══════════════ -->
+<div id="page-success" class="page" role="main">
+  <div id="success-wrap">
+    <div class="chk">ORDER CONFIRMED</div>
+    <div class="order-no">ORDER NO. <strong id="ord-num"></strong></div>
+    <h2>THANK YOU.</h2>
+    <p>YOUR CLIPPINGS WILL BE CAREFULLY PACKAGED AND SHIPPED WITHIN 2–3 BUSINESS DAYS.</p>
+    <button class="btn-black" onclick="nav('shop')">CONTINUE SHOPPING</button>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: SELL ═══════════════ -->
+<div id="page-sell" class="page" role="main">
+  <div id="sell-inner">
+    <div class="page-h">LIST AN ITEM</div>
+    <p class="sell-intro">SUBMIT YOUR LISTING BELOW. ALL ITEMS ARE REVIEWED BEFORE GOING LIVE ON THE MARKETPLACE.</p>
+
+    <form id="sell-form" novalidate>
+      <div class="form-sec-label">PRODUCT IMAGE</div>
+      <div class="upload-zone" onclick="document.getElementById('img-input').click()" role="button" tabindex="0" aria-label="Click to upload image">
+        <div class="uico">UPLOAD</div>
+        <div class="utxt">CLICK TO UPLOAD A PHOTO</div>
+        <div class="usub">JPG OR PNG — MAX 10MB</div>
+        <input type="file" id="img-input" accept="image/*" onchange="prevImg(this)" aria-label="Select image file">
+      </div>
+      <img id="img-preview" alt="Image preview">
+      <span class="error-msg" id="err-img" role="alert"></span>
+
+      <div style="margin-top:20px;">
+        <div class="form-sec-label">LISTING DETAILS</div>
+        <div class="fg">
+          <label for="s-title">TITLE *</label>
+          <input id="s-title" type="text" placeholder="E.G. LEFT THUMB CLIPPING — APRIL 5TH" required aria-required="true">
+          <span class="error-msg" id="err-title" role="alert"></span>
+        </div>
+        <div class="fg">
+          <label for="s-cat">CATEGORY *</label>
+          <select id="s-cat" required aria-required="true">
+            <option value="">SELECT CATEGORY</option>
+            <option value="fingernails">FINGERNAILS</option>
+            <option value="toenails">TOENAILS</option>
+            <option value="personal">PERSONAL ITEMS</option>
+          </select>
+          <span class="error-msg" id="err-cat" role="alert"></span>
+        </div>
+        <div class="fg">
+          <label for="s-price">PRICE (USD) *</label>
+          <input id="s-price" type="number" placeholder="4.99" min="0.01" step="0.01" required aria-required="true">
+          <span class="error-msg" id="err-price" role="alert"></span>
+        </div>
+        <div class="fg">
+          <label for="s-desc">DESCRIPTION *</label>
+          <textarea id="s-desc" rows="4" placeholder="TRIMMED DATE, CONDITION, ANY RELEVANT DETAILS..." required aria-required="true"></textarea>
+          <span class="error-msg" id="err-desc" role="alert"></span>
+        </div>
+        <div class="fg">
+          <label for="s-name">SELLER NAME</label>
+          <input id="s-name" type="text" placeholder="@USERNAME">
+        </div>
+      </div>
+
+      <button type="button" class="btn-black" style="width:100%;justify-content:center;padding:15px;" onclick="submitListing()">SUBMIT LISTING →</button>
+    </form>
+    <p class="sell-note">BY SUBMITTING YOU AGREE TO OUR SELLER TERMS.<br>LISTINGS GO LIVE WITHIN 24 HOURS.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: ABOUT ═══════════════ -->
+<div id="page-about" class="page" role="main">
+  <div id="about-inner">
+    <h1>A MARKET FOR<br>THE PERSONAL.</h1>
+    <p><strong>BUY YOUR FINGERNAILS</strong> IS A MARKETPLACE FOR PERSONAL ARTIFACTS, ALLOWING USERS TO BUY AND SELL UNIQUE PIECES FROM THEIR LIVES.</p>
+    <p>WE STARTED THIS PLATFORM BECAUSE WE BELIEVE THAT EVEN THE SMALLEST, MOST OVERLOOKED PARTS OF OUR DAILY EXISTENCE HAVE VALUE — AS ART, AS CURIOSITY, AS CONNECTION BETWEEN STRANGERS.</p>
+    <hr>
+    <p>WHETHER YOU ARE A COLLECTOR OF THE UNUSUAL, AN ARTIST LOOKING FOR ORGANIC MATERIAL, OR SIMPLY SOMEONE WHO FINDS MEANING IN THE MUNDANE — THIS IS YOUR MARKETPLACE.</p>
+    <p>ALL TRANSACTIONS ARE HANDLED SECURELY. SELLERS ARE VERIFIED. LISTINGS ARE REVIEWED BEFORE GOING LIVE.</p>
+    <div class="about-vals">
+      <div class="av"><div class="av-t">AUTHENTICITY</div><div class="av-b">EVERY ITEM MUST BE REAL AND ACCURATELY DESCRIBED. NO FAKES.</div></div>
+      <div class="av"><div class="av-t">SIMPLICITY</div><div class="av-b">THE PLATFORM STAYS MINIMAL SO THE ITEMS SPEAK FOR THEMSELVES.</div></div>
+      <div class="av"><div class="av-t">PRIVACY</div><div class="av-b">SELLERS CAN REMAIN ANONYMOUS. BUYERS ARE FULLY PROTECTED.</div></div>
+      <div class="av"><div class="av-t">COMMUNITY</div><div class="av-b">A RESPECTFUL MARKET FOR PEOPLE WHO APPRECIATE THE UNUSUAL.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="foot-cell">© 2026 BUY YOUR FINGERNAILS</div>
+  <div class="foot-cell">HELLO@BUYYOURFINGERNAILS.COM</div>
+  <div class="foot-cell" style="justify-content:flex-end;">ALL RIGHTS RESERVED</div>
+</footer>
+
+</div><!-- /app -->
+
+<script>
+/* ════════════════════════════════════════════
+   STORAGE CONSTANTS
+════════════════════════════════════════════ */
+const STORAGE_CART = 'BYFINGERS_CART';
+const STORAGE_LISTINGS = 'BYFINGERS_LISTINGS';
+
+const SEEDS = [
+  {id:1,  e:'💅', t:'LEFT THUMB CLIPPING',      c:'fingernails', p:4.99,  d:'NATURAL. UNPOLISHED. CLEAN TRIM. STORED IN A SEALED ENVELOPE IMMEDIATELY AFTER CLIPPING.',  seller:'@CLIPMASTER',   date:'APR 5 2026',  cond:'NATURAL', qty:1,  feat:true},
+  {id:2,  e:'✂️', t:'RIGHT INDEX SET (X3)',      c:'fingernails', p:8.50,  d:'THREE CLIPPINGS FROM THE RIGHT INDEX FINGER ACROSS MARCH. SLIGHTLY CURVED, NATURAL PINK TONE.', seller:'@NAILCOLLECTOR',date:'MAR 31 2026',cond:'NATURAL', qty:3,  feat:true},
+  {id:3,  e:'🦶', t:'BIG TOE CLIPPING',          c:'toenails',    p:3.50,  d:'SINGLE BIG TOENAIL CLIPPING. THICK, NATURAL, TRIMMED STRAIGHT. STORED FLAT.',               seller:'@TOECLIPS',     date:'FEB 20 2026', cond:'NATURAL', qty:1,  feat:false},
+  {id:4,  e:'💎', t:'PAINTED PINKY NAIL',        c:'fingernails', p:12.00, d:'PINKY NAIL WITH RED NAIL POLISH FULLY INTACT. REMOVED DURING A FULL MANICURE.',              seller:'@LACQUERQUEEN', date:'APR 1 2026',  cond:'PAINTED', qty:1,  feat:true},
+  {id:5,  e:'🌙', t:'FULL SET — 10 FINGERS',     c:'fingernails', p:22.00, d:'ALL 10 FINGERNAIL CLIPPINGS FROM A SINGLE TRIM SESSION. INDIVIDUALLY LABELED.',              seller:'@COMPLETESET',  date:'APR 8 2026',  cond:'NATURAL', qty:10, feat:true},
+  {id:6,  e:'🪴', t:"GARDEN WORKER'S THUMB",     c:'fingernails', p:6.00,  d:'THUMB CLIPPING FROM AN AVID GARDENER. NATURAL EARTH TONE. MAY HAVE TRACE SOIL RESIDUE.',     seller:'@GREENTHUMB',   date:'APR 3 2026',  cond:'AGED',    qty:1,  feat:false},
+  {id:7,  e:'🦶', t:'PINKY TOE CLIPPING',        c:'toenails',    p:2.50,  d:'TINY PINKY TOENAIL CLIPPING. VERY SMALL, NATURALLY CURVED.',                                seller:'@TOECLIPS',     date:'MAR 15 2026', cond:'NATURAL', qty:1,  feat:false},
+  {id:8,  e:'📿', t:'HAIR + NAIL BUNDLE',        c:'personal',    p:15.00, d:'THREE FINGERNAIL CLIPPINGS AND A SMALL STRAND OF HAIR, SEALED TOGETHER.',                   seller:'@ARTIFACTSHOP', date:'APR 10 2026', cond:'NATURAL', qty:1,  feat:false},
+  {id:9,  e:'✨', t:'GLITTER GEL NAIL',          c:'fingernails', p:9.99,  d:'INDEX FINGER NAIL WITH GOLD GLITTER GEL FULLY INTACT. REMOVED FROM FULL GEL MANICURE.',     seller:'@GELGURU',      date:'APR 7 2026',  cond:'GEL',     qty:1,  feat:false},
+  {id:10, e:'🦉', t:'ELDERLY HAND SET',          c:'fingernails', p:18.00, d:"COMPLETE SET FROM A 74-YEAR-OLD'S HANDS. THICK, WELL-LIVED NAILS. RARE FOR COLLECTORS.",   seller:'@RAREARTIFACTS',date:'APR 9 2026',  cond:'AGED',    qty:10, feat:false},
+];
+
+/* ════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════ */
+let extra = [], cart = [], filt = 'all', sort = '', curId = null, fromPage = 'shop', payMethod = 'stripe';
+let toastTimer;
+
+const all = () => [...SEEDS, ...extra];
+
+/* ════════════════════════════════════════════
+   STORAGE: CART PERSISTENCE
+════════════════════════════════════════════ */
+function saveCart() {
+  try {
+    localStorage.setItem(STORAGE_CART, JSON.stringify(cart));
+  } catch (e) {
+    console.error('Failed to save cart:', e);
+  }
+}
+
+function loadCart() {
+  try {
+    const saved = localStorage.getItem(STORAGE_CART);
+    if (saved) cart = JSON.parse(saved);
+  } catch (e) {
+    console.error('Failed to load cart:', e);
+    cart = [];
+  }
+  updBadge();
+}
+
+function saveListings() {
+  try {
+    localStorage.setItem(STORAGE_LISTINGS, JSON.stringify(extra));
+  } catch (e) {
+    console.error('Failed to save listings:', e);
+  }
+}
+
+function loadListings() {
+  try {
+    const saved = localStorage.getItem(STORAGE_LISTINGS);
+    if (saved) extra = JSON.parse(saved);
+  } catch (e) {
+    console.error('Failed to load listings:', e);
+    extra = [];
+  }
+}
+
+/* ════════════════════════════════════════════
+   VALIDATION
+════════════
