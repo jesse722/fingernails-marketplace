@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Panel</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Orders Management</a></li>
+                <li><a href="#">Products Management</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="dashboard">
+            <h2>Dashboard</h2>
+            <p>Welcome to the admin dashboard.</p>
+        </section>
+        <section id="orders-management">
+            <h2>Orders Management</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer Name</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Orders will be populated here -->
+                </tbody>
+            </table>
+        </section>
+        <section id="products-management">
+            <h2>Products Management</h2>
+            <form id="product-form">
+                <input type="text" placeholder="Product Name" required />
+                <input type="file" placeholder="Upload Image" required />
+                <button type="submit">Add Product</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Products will be populated here -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2026 Fingernails Marketplace. All rights reserved.</p>
+    </footer>
+    <script src="scripts.js"></script>
+</body>
+</html>
